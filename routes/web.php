@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Web\AuthWebController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\TicketWebController;
+
 
 Route::get('/login', [AuthWebController::class, 'login'])
     ->name('auth.login');
@@ -26,3 +28,11 @@ Route::get('/dashboard', [AuthWebController::class, 'dashboard'])
 
 Route::post('/logout', [AuthWebController::class, 'logout'])
     ->name('auth.logout');
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/tickets/create', [TicketWebController::class, 'create'])
+        ->name('tickets.create');
+
+    Route::post('/tickets', [TicketWebController::class, 'store'])
+        ->name('tickets.store');
+});

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ticket extends Model
 {
-    protected $fillable=['user_id','subject','message','status'];
+    protected $fillable=['subject','message','status'];
 
     public function user():belongsTo
     {

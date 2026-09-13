@@ -61,7 +61,17 @@
 </head>
 
 <body>
-
+@if (session('success'))
+    <div style="
+        padding: 12px;
+        margin-bottom: 20px;
+        background-color: #d4edda;
+        color: #155724;
+        border-radius: 8px;
+    ">
+        {{ session('success') }}
+    </div>
+@endif
 <div class="container">
 
     <div class="header">

@@ -73,7 +73,7 @@ class AuthWebController extends Controller
         }
 
         return redirect()
-            ->route('dashboard');
+            ->route('tickets.create');
     }
 
     public function name(): View
