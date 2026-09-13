@@ -57,6 +57,19 @@
             color: white;
             cursor: pointer;
         }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
     </style>
 </head>
 
@@ -121,7 +134,9 @@
         <button type="submit">
             خروج
         </button>
-
+        <a href="{{ route('tickets.index') }}" class="btn">
+            تیکت‌های من
+        </a>
     </form>
 
 </div>
