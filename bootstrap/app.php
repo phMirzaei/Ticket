@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Exceptions\OtpAttemptsExceededException;
+use App\Exceptions\InvalidTokenException;
 use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -39,5 +40,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->withErrors([
                     'code' => 'کد پیدا نشد.',
                 ]);
+        });
+        $exceptions->render(function (
+            InvalidTokenException $e,
+            Request               $request
+        ) {
+            return redirect()
+                ->route('auth.login')
+                ->with('error', 'توکن معتبر نیست. لطفاً دوباره وارد شوید.');
         });
     })->create();

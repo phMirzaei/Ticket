@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Web;
 
 use App\DTOs\RequestPhoneNumberVerification;
+use App\DTOs\AuthenticatedUser;
+use App\DTOs\UpdatedName;
 use App\DTOs\VerifyPhoneNumber;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SendOtpRequest;
 use App\Http\Requests\Auth\UpdateNameRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
+use App\Services\GetAuthenticatedUserService;
 use App\Services\RequestPhoneNumberVerificationService;
+use App\Services\UpdatedNameService;
 use App\Services\VerifyPhoneNumberService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -75,7 +79,8 @@ class AuthWebController extends Controller
     }
 
     public function updateName(
-        UpdateNameRequest $request
+        UpdateNameRequest $request,
+        UpdatedNameService $service
     ): RedirectResponse {
         $validated = $request->validated();
 
@@ -87,26 +92,20 @@ class AuthWebController extends Controller
                 ->with('error', 'ابتدا وارد شوید.');
         }
 
-        $user = auth('api')
-            ->setToken($token)
-            ->user();
-
-        if (! $user) {
-            return redirect()
-                ->route('auth.login')
-                ->with('error', 'توکن معتبر نیست.');
-        }
-
-        $user->update([
-            'name' => $validated['name'],
-        ]);
+        $service->execute(
+            new UpdatedName(
+                $token,
+                $validated['name']
+            )
+        );
 
         return redirect()
             ->route('dashboard');
     }
 
     public function dashboard(
-        Request $request
+        Request $request,
+        GetAuthenticatedUserService $service
     ): View|RedirectResponse {
         $token = $request->cookie('token');
 
@@ -115,14 +114,7 @@ class AuthWebController extends Controller
                 ->route('auth.login');
         }
 
-        $user = auth('api')
-            ->setToken($token)
-            ->user();
-
-        if (! $user) {
-            return redirect()
-                ->route('auth.login');
-        }
+        $user = $service->execute(new AuthenticatedUser($token));
 
         return view('dashboard', [
             'user' => $user,

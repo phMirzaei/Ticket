@@ -44,7 +44,6 @@ class VerifyPhoneNumberService
             $user = User::firstOrCreate(
                 ['phone' => $otp->phone],
                 [
-                    'name' => 'کاربر',
                     'role' => 'customer',
                 ]
             );
