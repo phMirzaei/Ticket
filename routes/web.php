@@ -1,14 +1,15 @@
 <?php
 
+use App\Http\Controllers\TicketWebController;
 use App\Http\Controllers\Web\AuthWebController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\TicketWebController;
 
 
 Route::get('/login', [AuthWebController::class, 'login'])
     ->name('auth.login');
 
 Route::post('/login', [AuthWebController::class, 'requestOtp'])
+    ->middleware('throttle:6,10')
     ->name('auth.request-otp');
 
 Route::get('/otp', [AuthWebController::class, 'otp'])

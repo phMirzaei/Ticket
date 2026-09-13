@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Web;
-
 use App\DTOs\RequestPhoneNumberVerification;
 use App\DTOs\VerifyPhoneNumber;
 use App\Http\Controllers\Controller;
@@ -9,6 +8,7 @@ use App\Services\RequestPhoneNumberVerificationService;
 use App\Services\VerifyPhoneNumberService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 
 class AuthWebController extends Controller
@@ -18,15 +18,17 @@ class AuthWebController extends Controller
         return view('auth.login');
     }
 
+
+
     public function requestOtp(
         Request $request,
         RequestPhoneNumberVerificationService $service
-    ): View {
-        $request->validate([
+    ) {
+        $validated = $request->validate([
             'phone' => ['required', 'string'],
         ]);
 
-        $phone = $request->input('phone');
+        $phone = $validated['phone'];
 
         $code = $service->execute(
             new RequestPhoneNumberVerification($phone)

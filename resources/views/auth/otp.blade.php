@@ -105,7 +105,13 @@
     <h1>
         تایید شماره
     </h1>
-
+    @if ($errors->any())
+        <div class="otp-error">
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
     <p>
         کد ارسال شده به شماره
         <strong>{{ $phone }}</strong>

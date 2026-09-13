@@ -114,6 +114,7 @@
         </div>
     @endif
 
+
     <form action="{{ route('auth.request-otp') }}" method="POST">
 
         @csrf

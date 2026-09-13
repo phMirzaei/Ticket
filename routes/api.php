@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\TicketWebController;
 
 Route::post('/auth/send-otp', [AuthController::class, 'requestOtp']);
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp']);
