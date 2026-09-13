@@ -35,4 +35,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/tickets', [TicketWebController::class, 'store'])
         ->name('tickets.store');
+    Route::get('/tickets', [TicketWebController::class, 'index'])
+        ->name('tickets.index');
 });

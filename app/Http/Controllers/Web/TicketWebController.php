@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 class TicketWebController extends Controller
 {
+    public function index()
+    {
+        $tickets=Ticket::where('user_id',auth()->id())->latest()->get();
+        return view('tickets.index',compact('tickets'));
+    }
     public function create()
     {
        return view('tickets.create');
