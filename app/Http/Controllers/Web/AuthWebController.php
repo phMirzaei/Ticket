@@ -1,14 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Web;
+
 use App\DTOs\RequestPhoneNumberVerification;
 use App\DTOs\VerifyPhoneNumber;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\SendOtpRequest;
+use App\Http\Requests\Auth\UpdateNameRequest;
+use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Services\RequestPhoneNumberVerificationService;
 use App\Services\VerifyPhoneNumberService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AuthWebController extends Controller
@@ -18,15 +21,11 @@ class AuthWebController extends Controller
         return view('auth.login');
     }
 
-
-
     public function requestOtp(
-        Request $request,
+        SendOtpRequest $request,
         RequestPhoneNumberVerificationService $service
-    ) {
-        $validated = $request->validate([
-            'phone' => ['required', 'string'],
-        ]);
+    ): View {
+        $validated = $request->validated();
 
         $phone = $validated['phone'];
 
@@ -40,24 +39,16 @@ class AuthWebController extends Controller
         ]);
     }
 
-    public function otp(): View
-    {
-        return view('auth.otp');
-    }
-
     public function verifyOtp(
-        Request $request,
+        VerifyOtpRequest $request,
         VerifyPhoneNumberService $service
     ): RedirectResponse {
-        $request->validate([
-            'phone' => ['required', 'string'],
-            'code' => ['required', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $user = $service->execute(
             new VerifyPhoneNumber(
-                $request->input('code'),
-                $request->input('phone')
+                $validated['code'],
+                $validated['phone']
             )
         );
 
@@ -83,16 +74,10 @@ class AuthWebController extends Controller
         return view('auth.name');
     }
 
-    public function updateName(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'min:2',
-                'max:100',
-            ],
-        ]);
+    public function updateName(
+        UpdateNameRequest $request
+    ): RedirectResponse {
+        $validated = $request->validated();
 
         $token = $request->cookie('token');
 
@@ -113,15 +98,16 @@ class AuthWebController extends Controller
         }
 
         $user->update([
-            'name' => $request->input('name'),
+            'name' => $validated['name'],
         ]);
 
         return redirect()
             ->route('dashboard');
     }
 
-    public function dashboard(Request $request): View|RedirectResponse
-    {
+    public function dashboard(
+        Request $request
+    ): View|RedirectResponse {
         $token = $request->cookie('token');
 
         if (! $token) {
@@ -143,8 +129,9 @@ class AuthWebController extends Controller
         ]);
     }
 
-    public function logout(Request $request): RedirectResponse
-    {
+    public function logout(
+        Request $request
+    ): RedirectResponse {
         $token = $request->cookie('token');
 
         if ($token) {

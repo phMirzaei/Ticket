@@ -9,11 +9,8 @@ Route::get('/login', [AuthWebController::class, 'login'])
     ->name('auth.login');
 
 Route::post('/login', [AuthWebController::class, 'requestOtp'])
-    ->middleware('throttle:6,10')
+    ->middleware('throttle:6,1')
     ->name('auth.request-otp');
-
-Route::get('/otp', [AuthWebController::class, 'otp'])
-    ->name('auth.otp');
 
 Route::post('/otp', [AuthWebController::class, 'verifyOtp'])
     ->name('auth.verify-otp');
