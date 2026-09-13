@@ -3,143 +3,178 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>داشبورد</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: Tahoma, Arial, sans-serif;
             background: #f5f5f5;
         }
 
         .container {
-            width: 90%;
-            max-width: 1000px;
-            margin: 50px auto;
+            width: 900px;
+            max-width: 90%;
+            margin: 40px auto;
         }
 
         .header {
-            background: #222;
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-        }
-
-        .card {
-            margin-top: 20px;
-            padding: 25px;
             background: white;
-            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        .info {
-            margin: 15px 0;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
+        .header h1 {
+            margin: 0 0 10px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #666;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
         }
 
         .logout {
-            margin-top: 20px;
+            display: inline-block;
+            margin-top: 15px;
+            margin-right: 10px;
         }
 
         .logout button {
-            padding: 12px 25px;
+            padding: 10px 15px;
+            background: #dc2626;
+            color: white;
             border: none;
-            border-radius: 8px;
-            background: #d32f2f;
-            color: white;
-            cursor: pointer;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
         }
 
-        .btn:hover {
-            background-color: #1d4ed8;
+        .tickets {
+            background: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .tickets h2 {
+            margin-top: 0;
+        }
+
+        .ticket {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ticket:last-child {
+            border-bottom: none;
+        }
+
+        .ticket h3 {
+            margin: 0 0 8px;
+        }
+
+        .ticket p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .open {
+            color: #2563eb;
+        }
+
+        .closed {
+            color: #15803d;
         }
     </style>
 </head>
 
 <body>
-@if (session('success'))
-    <div style="
-        padding: 12px;
-        margin-bottom: 20px;
-        background-color: #d4edda;
-        color: #155724;
-        border-radius: 8px;
-    ">
-        {{ session('success') }}
-    </div>
-@endif
+
 <div class="container">
 
     <div class="header">
+
         <h1>
-            داشبورد
+            سلام {{ $user->name }}
         </h1>
 
         <p>
-            به پنل کاربری خوش آمدید.
+            به داشبورد خودت خوش آمدی.
         </p>
+
+        <a href="{{ route('tickets.create') }}" class="button">
+            ثبت تیکت جدید
+        </a>
+
+        <form action="{{ route('auth.logout') }}" method="POST" class="logout">
+            @csrf
+
+            <button type="submit">
+                خروج
+            </button>
+        </form>
+
     </div>
 
-    <div class="card">
+
+    <div class="tickets">
 
         <h2>
-            اطلاعات کاربر
+            تیکت‌های من
         </h2>
 
-        <div class="info">
-            <strong>نام:</strong>
+        @forelse($tickets as $ticket)
 
-            {{ $user->name }}
-        </div>
+            <div class="ticket">
 
-        <div class="info">
-            <strong>شماره موبایل:</strong>
+                <h3>
+                    {{ $ticket->subject }}
+                </h3>
 
-            {{ $user->phone }}
-        </div>
+                <p>
+                    {{ $ticket->message }}
+                </p>
 
-        <div class="info">
-            <strong>نقش:</strong>
+                @if($ticket->status === 'open')
 
-            {{ $user->role }}
-        </div>
+                    <span class="open">
+                        باز
+                    </span>
+
+                @elseif($ticket->status === 'closed')
+
+                    <span class="closed">
+                        بسته شده
+                    </span>
+
+                @endif
+
+            </div>
+
+        @empty
+
+            <p>
+                هنوز تیکتی ثبت نکرده‌اید.
+            </p>
+
+        @endforelse
 
     </div>
-
-    <form
-        class="logout"
-        action="{{ route('auth.logout') }}"
-        method="POST"
-    >
-
-        @csrf
-
-        <button type="submit">
-            خروج
-        </button>
-        <a href="{{ route('tickets.index') }}" class="btn">
-            تیکت‌های من
-        </a>
-    </form>
 
 </div>
 
 </body>
+
 </html>

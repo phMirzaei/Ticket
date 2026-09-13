@@ -2,12 +2,14 @@
 
 use App\Exceptions\OtpNotFoundException;
 use App\Exceptions\WrongOtpException;
+use App\Http\Controllers\Support\SupportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Exceptions\OtpAttemptsExceededException;
 use App\Exceptions\InvalidTokenException;
 use Illuminate\Http\Request;
+use App\Http\Middleware\SupportMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(
             fn() => route('auth.login')
         );
+        $middleware->alias([
+            'support' => SupportMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (OtpAttemptsExceededException $e, Request $request) {
