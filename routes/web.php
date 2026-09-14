@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Support\SupportController;
 use App\Http\Controllers\TicketWebController;
 use App\Http\Controllers\Web\AuthWebController;
-use App\Http\Controllers\Support\SupportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthWebController::class, 'login'])
@@ -44,4 +45,15 @@ Route::middleware(['auth', 'support'])->group(function () {
 
     Route::get('/support/tickets/{ticket}', [SupportController::class, 'show'])
         ->name('support.tickets.show');
+});
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/supports', [AdminController::class, 'showSupports'])
+        ->name('admin.supports');
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+        ->name('admin.dashboard');
+    Route::get('/add/support/{user}', [AdminController::class, 'addSupportForm'])
+        ->name('admin.add');
+    Route::post('/add/support/{user}', [AdminController::class, 'addSupport'])
+        ->name('admin.add.store');
+
 });

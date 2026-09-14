@@ -5,24 +5,25 @@ namespace App\Http\Controllers;
 use App\DTOs\CreateTicket;
 use App\DTOs\GetUserTickets;
 use App\Http\Requests\Tickets\StoreTicketRequest;
-use App\Models\Ticket;
 use App\Services\CreateTicketService;
 use App\Services\GetUserTicketsService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class TicketWebController extends Controller
 {
     public function index(GetUserTicketsService $service)
     {
-       $tickets= $service->execute(new GetUserTickets(auth()->id()));
-        return view('tickets.index',compact('tickets'));
+        $tickets = $service->execute(new GetUserTickets(auth()->id()));
+
+        return view('tickets.index', compact('tickets'));
     }
+
     public function create()
     {
-       return view('tickets.create');
+        return view('tickets.create');
     }
-        public function store(StoreTicketRequest $request,CreateTicketService $service): RedirectResponse
+
+    public function store(StoreTicketRequest $request, CreateTicketService $service): RedirectResponse
     {
         $validated = $request->validated();
         $service->execute(
@@ -32,6 +33,7 @@ class TicketWebController extends Controller
                 $validated['message'],
             )
         );
+
         return redirect()
             ->route('dashboard')
             ->with('success', 'تیکت شما ثبت شد!');

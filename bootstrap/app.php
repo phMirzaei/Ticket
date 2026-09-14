@@ -1,29 +1,32 @@
 <?php
 
+use App\Exceptions\InvalidTokenException;
+use App\Exceptions\OtpAttemptsExceededException;
 use App\Exceptions\OtpNotFoundException;
 use App\Exceptions\WrongOtpException;
-use App\Http\Controllers\Support\SupportController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\SupportMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Exceptions\OtpAttemptsExceededException;
-use App\Exceptions\InvalidTokenException;
 use Illuminate\Http\Request;
-use App\Http\Middleware\SupportMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        api: __DIR__ . '/../routes/api.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectGuestsTo(
-            fn() => route('auth.login')
+            fn () => route('auth.login')
         );
         $middleware->alias([
             'support' => SupportMiddleware::class,
+        ]);
+        $middleware->alias([
+            'admin' => AdminMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -48,7 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $exceptions->render(function (
             InvalidTokenException $e,
-            Request               $request
+            Request $request
         ) {
             return redirect()
                 ->route('auth.login')

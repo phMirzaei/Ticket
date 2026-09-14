@@ -8,12 +8,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SupportMiddleware
 {
-
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()||auth()->user()->role!=='support') {
+        if (! auth()->check() || auth()->user()->role !== 'support') {
             abort(403);
         }
+
         return $next($request);
     }
 }

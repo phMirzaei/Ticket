@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SendOtpRequest;
 use App\Http\Requests\Auth\UpdateNameRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
-use App\Models\Ticket;
 use App\Services\GetUserTicketsService;
 use App\Services\RequestPhoneNumberVerificationService;
 use App\Services\VerifyPhoneNumberService;
@@ -65,6 +64,10 @@ class AuthWebController extends Controller
             return redirect()
                 ->route('support.dashboard');
         }
+        if ($user->role === 'admin') {
+            return redirect()
+                ->route('admin.dashboard');
+        }
 
         return redirect()
             ->route('dashboard');
@@ -91,7 +94,6 @@ class AuthWebController extends Controller
         $user->update([
             'name' => $validated['name'],
         ]);
-
         if ($user->role === 'support') {
             return redirect()
                 ->route('support.dashboard');
@@ -109,13 +111,14 @@ class AuthWebController extends Controller
         }
 
         $user = auth()->user();
-        $tickets=$service->execute(new GetUserTickets($user->id));
+        $tickets = $service->execute(new GetUserTickets($user->id));
 
         return view('dashboard', [
             'user' => $user,
             'tickets' => $tickets,
         ]);
     }
+
     public function logout(): RedirectResponse
     {
         auth()->logout();
