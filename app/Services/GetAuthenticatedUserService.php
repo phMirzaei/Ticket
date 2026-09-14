@@ -15,7 +15,7 @@ class GetAuthenticatedUserService
             ->user();
 
         if (! $user) {
-            throw new InvalidTokenException();
+            throw new InvalidTokenException;
         }
 
         return $user;

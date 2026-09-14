@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\DTOs\GetUserTickets;
 use App\DTOs\RequestPhoneNumberVerification;
-use App\DTOs\AuthenticatedUser;
-use App\DTOs\UpdatedName;
 use App\DTOs\VerifyPhoneNumber;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SendOtpRequest;
 use App\Http\Requests\Auth\UpdateNameRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
-use App\Services\GetAuthenticatedUserService;
+use App\Services\GetUserTicketsService;
 use App\Services\RequestPhoneNumberVerificationService;
-use App\Services\UpdatedNameService;
 use App\Services\VerifyPhoneNumberService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class AuthWebController extends Controller
@@ -56,21 +53,24 @@ class AuthWebController extends Controller
             )
         );
 
-        $token = auth('api')->login($user);
-
-        cookie()->queue(
-            'token',
-            $token,
-            60 * 24
-        );
+        auth()->login($user);
 
         if (! $user->name) {
             return redirect()
                 ->route('profile.name');
         }
 
+        if ($user->role === 'support') {
+            return redirect()
+                ->route('support.dashboard');
+        }
+        if ($user->role === 'admin') {
+            return redirect()
+                ->route('admin.dashboard');
+        }
+
         return redirect()
-            ->route('tickets.create');
+            ->route('dashboard');
     }
 
     public function name(): View
@@ -79,62 +79,49 @@ class AuthWebController extends Controller
     }
 
     public function updateName(
-        UpdateNameRequest $request,
-        UpdatedNameService $service
+        UpdateNameRequest $request
     ): RedirectResponse {
         $validated = $request->validated();
 
-        $token = $request->cookie('token');
-
-        if (! $token) {
+        if (! auth()->check()) {
             return redirect()
                 ->route('auth.login')
                 ->with('error', 'ابتدا وارد شوید.');
         }
 
-        $service->execute(
-            new UpdatedName(
-                $token,
-                $validated['name']
-            )
-        );
+        $user = auth()->user();
+
+        $user->update([
+            'name' => $validated['name'],
+        ]);
+        if ($user->role === 'support') {
+            return redirect()
+                ->route('support.dashboard');
+        }
 
         return redirect()
             ->route('dashboard');
     }
 
-    public function dashboard(
-        Request $request,
-        GetAuthenticatedUserService $service
-    ): View|RedirectResponse {
-        $token = $request->cookie('token');
-
-        if (! $token) {
+    public function dashboard(GetUserTicketsService $service): View|RedirectResponse
+    {
+        if (! auth()->check()) {
             return redirect()
                 ->route('auth.login');
         }
 
-        $user = $service->execute(new AuthenticatedUser($token));
+        $user = auth()->user();
+        $tickets = $service->execute(new GetUserTickets($user->id));
 
         return view('dashboard', [
             'user' => $user,
+            'tickets' => $tickets,
         ]);
     }
 
-    public function logout(
-        Request $request
-    ): RedirectResponse {
-        $token = $request->cookie('token');
-
-        if ($token) {
-            auth('api')
-                ->setToken($token)
-                ->logout();
-        }
-
-        cookie()->queue(
-            cookie()->forget('token')
-        );
+    public function logout(): RedirectResponse
+    {
+        auth()->logout();
 
         return redirect()
             ->route('auth.login');
