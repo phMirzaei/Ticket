@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,44 +14,35 @@
 
         body {
             margin: 0;
-            min-height: 100vh;
-            background: #f4f6f9;
-            font-family: Arial, sans-serif;
-            color: #222;
+            background: #f5f5f5;
+            font-family: Tahoma, Arial, sans-serif;
+            color: #333;
         }
 
         .page {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 50px 20px;
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
         }
 
         .header {
-            background: white;
-            padding: 25px 30px;
-            border-radius: 14px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 25px;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 26px;
+            font-size: 24px;
         }
 
         .new-ticket {
-            display: inline-block;
-            padding: 11px 18px;
             background: #2563eb;
             color: white;
             text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 9px 15px;
+            border-radius: 5px;
         }
 
         .new-ticket:hover {
@@ -59,10 +51,10 @@
 
         .ticket {
             background: white;
-            border-radius: 14px;
-            padding: 25px;
-            margin-bottom: 18px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 15px;
         }
 
         .ticket-top {
@@ -72,15 +64,21 @@
             margin-bottom: 15px;
         }
 
-        .ticket h3 {
+        .ticket-top h3 {
             margin: 0;
-            font-size: 20px;
+            font-size: 18px;
+        }
+
+        .status {
+            background: #eee;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
         }
 
         .ticket-message {
-            color: #555;
             line-height: 1.8;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .ticket-info {
@@ -88,33 +86,34 @@
             justify-content: space-between;
             align-items: center;
             border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-
-        .status {
-            padding: 6px 12px;
-            background: #e8f1ff;
-            color: #2563eb;
-            border-radius: 20px;
-            font-size: 13px;
+            padding-top: 12px;
         }
 
         .date {
-            color: #888;
+            color: #777;
             font-size: 13px;
+        }
+
+        .show-ticket {
+            background: #333;
+            color: white;
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .show-ticket:hover {
+            background: #222;
         }
 
         .empty {
             background: white;
-            padding: 50px 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 30px;
             text-align: center;
-            border-radius: 14px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-        }
-
-        .empty p {
             color: #777;
-            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -131,19 +130,28 @@
         </a>
     </div>
 
-
     @forelse($tickets as $ticket)
 
         <div class="ticket">
 
             <div class="ticket-top">
+
                 <h3>
                     {{ $ticket->subject }}
                 </h3>
+                @php
+                    $status = match ($ticket->status) {
+                        'open' => 'در انتظار پاسخ',
+                        'answered' => 'پاسخ داده شده',
+                        'closed' => 'بسته شده',
+                        default => $ticket->status,
+                    };
+                @endphp
 
-                <span class="status">
-                    {{ $ticket->status }}
+                <span class="status {{ $ticket->status }}">
+                   وضعیت :   {{ $status }}
                 </span>
+
             </div>
 
             <div class="ticket-message">
@@ -153,10 +161,14 @@
             <div class="ticket-info">
 
                 <span class="date">
-                    {{ $ticket->created_at->format('Y/m/d H:i') }}
-                </span>
+{{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}                </span>
 
-
+                <a
+                    href="{{ route('tickets.show', $ticket) }}"
+                    class="show-ticket"
+                >
+                    مشاهده تیکت
+                </a>
 
             </div>
 
@@ -165,15 +177,7 @@
     @empty
 
         <div class="empty">
-
-            <p>
-                هنوز هیچ تیکتی ثبت نکرده‌اید.
-            </p>
-
-            <a href="{{ route('tickets.create') }}" class="new-ticket">
-                ثبت اولین تیکت
-            </a>
-
+            هنوز هیچ تیکتی ثبت نکرده‌اید.
         </div>
 
     @endforelse

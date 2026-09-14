@@ -8,8 +8,5 @@ final readonly class CreateTicket
         public int $userId,
         public string $subject,
         public string $message,
-    )
-    {
-
-}
+    ) {}
 }
