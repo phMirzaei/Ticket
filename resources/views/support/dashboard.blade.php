@@ -24,6 +24,13 @@
             max-width: 92%;
             margin: 40px auto;
         }
+        .status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
 
         .header {
             display: flex;
@@ -233,7 +240,7 @@
                 <div class="ticket-info">
 
                     <div class="ticket-subject">
-                        {{ $ticket->subject }}
+                       موضوع: {{ $ticket->subject }}
                     </div>
 
                     <div class="ticket-user">
@@ -242,24 +249,23 @@
                         <br>
 
                         تاریخ:
-                        {{ $ticket->created_at->format('Y/m/d H:i') }}
-                    </div>
 
+         {{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}
+                    </div>
                 </div>
 
-                @if($ticket->status === 'open')
+                @php
+                    $status = match ($ticket->status) {
+                        'open' => 'در انتظار پاسخ',
+                        'answered' => 'پاسخ داده شده',
+                        'closed' => 'بسته شده',
+                        default => $ticket->status,
+                    };
+                @endphp
 
-                    <span class="ticket-status open">
-                        باز
-                    </span>
-
-                @elseif($ticket->status === 'closed')
-
-                    <span class="ticket-status closed">
-                        بسته شده
-                    </span>
-
-                @endif
+                <span class="status {{ $ticket->status }}">
+                   وضعیت :   {{ $status }}
+                </span>
 
                 <a href="{{ route('support.tickets.show', $ticket) }}" class="show-btn">
                     مشاهده تیکت

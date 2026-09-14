@@ -20,7 +20,7 @@ class SupportController extends Controller
 
     public function show(Ticket $ticket): View
     {
-        $ticket->load('user');
+        $ticket->load('messages.user');
 
         return view('support.tickets.show', compact('ticket'));
     }

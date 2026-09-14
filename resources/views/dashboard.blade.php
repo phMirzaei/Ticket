@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
 
 <head>
@@ -17,6 +18,11 @@
             width: 900px;
             max-width: 90%;
             margin: 40px auto;
+        }
+        .meta {
+            color: #777;
+            font-size: 14px;
+            line-height: 2;
         }
 
         .header {
@@ -97,13 +103,53 @@
         .closed {
             color: #15803d;
         }
+
+        .status {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .status.open {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status.answered {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status.closed {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .show-ticket {
+            display: inline-block;
+            padding: 7px 12px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .show-ticket:hover {
+            background: #222;
+        }
     </style>
+    ```
+
 </head>
 
 <body>
 
 <div class="container">
 
+    ```
     <div class="header">
 
         <h1>
@@ -140,26 +186,33 @@
             <div class="ticket">
 
                 <h3>
-                    {{ $ticket->subject }}
+                    موضوع:  {{ $ticket->subject }}
                 </h3>
 
                 <p>
-                    {{ $ticket->message }}
+                    توضیحات:  {{ $ticket->message }}
                 </p>
-
-                @if($ticket->status === 'open')
-
-                    <span class="open">
-                        باز
-                    </span>
-
-                @elseif($ticket->status === 'closed')
-
-                    <span class="closed">
-                        بسته شده
-                    </span>
-
-                @endif
+                <div class="meta">
+                    تاریخ ثبت:
+                    {{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}
+                </div>
+                @php
+                    $status = match ($ticket->status) {
+                        'open' => 'در انتظار پاسخ',
+                        'answered' => 'پاسخ داده شده',
+                        'closed' => 'بسته شده',
+                        default => $ticket->status,
+                    };
+                @endphp
+                <span class="status {{ $ticket->status }}">
+               وضعیت :   {{ $status }}
+            </span>
+                <a
+                    href="{{ route('tickets.show', $ticket) }}"
+                    class="show-ticket"
+                >
+                    مشاهده تیکت
+                </a>
 
             </div>
 
@@ -172,6 +225,7 @@
         @endforelse
 
     </div>
+    ```
 
 </div>
 

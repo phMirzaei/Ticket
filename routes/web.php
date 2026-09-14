@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Support\SupportController;
+use App\Http\Controllers\Support\SupportTicketController;
 use App\Http\Controllers\TicketWebController;
 use App\Http\Controllers\Web\AuthWebController;
 use Illuminate\Support\Facades\Route;
@@ -37,14 +38,22 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/tickets', [TicketWebController::class, 'index'])
         ->name('tickets.index');
+    Route::get('/tickets/{ticket}', [TicketWebController::class, 'show'])
+        ->name('tickets.show');
+    Route::post('/tickets/{ticket}/reply', [TicketWebController::class, 'reply'])
+        ->name('tickets.reply');
 });
 
 Route::middleware(['auth', 'support'])->group(function () {
     Route::get('/support/dashboard', [SupportController::class, 'dashboard'])
         ->name('support.dashboard');
-
     Route::get('/support/tickets/{ticket}', [SupportController::class, 'show'])
         ->name('support.tickets.show');
+    Route::post('/support/tickets/{ticket}/messages', [SupportTicketController::class, 'storeMessage'])
+        ->name('support.tickets.messages.store');
+    Route::post('/support/tickets/{ticket}/close', [SupportTicketController::class, 'close'])
+        ->name('support.tickets.close')
+        ->middleware('support');
 });
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/supports', [AdminController::class, 'showSupports'])
