@@ -13,7 +13,7 @@ class SupportController extends Controller
     public function dashboard(): View
     {
         $allTickets = Ticket::all();
-        $latestTickets = Ticket::latest()->take(5)->get();
+        $latestTickets = Ticket::where('status','open')->latest()->take(5)->get();
 
         return view('support.dashboard', compact('allTickets', 'latestTickets'));
 
