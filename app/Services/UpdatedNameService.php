@@ -13,8 +13,8 @@ class UpdatedNameService
             ->setToken($updatedName->token)
             ->user();
 
-        if (!$user) {
-            throw new InvalidTokenException();
+        if (! $user) {
+            throw new InvalidTokenException;
         }
 
         $user->update([
