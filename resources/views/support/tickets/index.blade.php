@@ -130,6 +130,15 @@
             width: 100%;
         }
 
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-right: 4px solid #198754;
+        }
+
         .ticket-item {
             background: #fff;
             border-radius: 10px;
@@ -143,6 +152,15 @@
         .ticket-item:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             transform: translateX(-2px);
+        }
+
+        .ticket-item.closed-ticket {
+            opacity: 0.75;
+            background: #fafafa;
+        }
+
+        .ticket-item.closed-ticket:hover {
+            opacity: 1;
         }
 
         .ticket-item .ticket-subject {
@@ -194,6 +212,42 @@
             border-right-color: #198754 !important;
         }
 
+        .btn-delete {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: #bb2d3b;
+        }
+
+        .btn-delete-inline {
+            background: none;
+            border: none;
+            color: #dc3545;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-delete-inline:hover {
+            background: #fee2e2;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -205,6 +259,12 @@
 
             .sidebar.show {
                 right: 0;
+            }
+
+            .action-buttons {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
             }
         }
     </style>
@@ -236,6 +296,12 @@
                 <span class="ticket-count">تعداد کل: {{ $tickets->count() }}</span>
             </div>
 
+            @if(session('success'))
+                <div class="alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <div class="chart-card">
                 <h6>📊 وضعیت تیکت‌ها</h6>
                 <div class="chart-wrapper">
@@ -256,7 +322,7 @@
                     };
                 @endphp
 
-                <div class="ticket-item status-{{ $ticket->status }} d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="ticket-item status-{{ $ticket->status }} {{ $ticket->status === 'closed' ? 'closed-ticket' : '' }} d-flex justify-content-between align-items-center flex-wrap gap-3">
 
                     <div>
                         <div class="ticket-subject">موضوع: {{ $ticket->subject }}</div>
@@ -274,9 +340,21 @@
                         </span>
                     </div>
 
-                    <a href="{{ route('support.tickets.show', $ticket) }}" class="btn btn-primary btn-sm px-3">
-                        مشاهده تیکت
-                    </a>
+                    <div class="action-buttons">
+                        <a href="{{ route('support.tickets.show', $ticket) }}" class="btn btn-primary btn-sm px-3">
+                            مشاهده تیکت
+                        </a>
+
+                        @if($ticket->status === 'closed')
+                            <form action="{{ route('support.tickets.delete', $ticket) }}" method="POST" onsubmit="return confirm('آیا از حذف این تیکت مطمئن هستید؟');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn-delete">
+                                    🗑 حذف
+                                </button>
+                            </form>
+                        @endif
+                    </div>
 
                 </div>
 

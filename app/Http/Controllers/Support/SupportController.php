@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Support;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class SupportController extends Controller
@@ -20,7 +21,8 @@ class SupportController extends Controller
 
     public function index(): View
     {
-        $tickets = Ticket::all();
+        $tickets = Ticket::orderByRaw('FIELD(status, "open", "answered", "closed")')
+            ->orderBy('created_at','desc')->get();
 
         return view('support.tickets.index', compact('tickets'));
     }
@@ -37,5 +39,12 @@ class SupportController extends Controller
         $ticket->load('messages.user');
 
         return view('support.tickets.show', compact('ticket'));
+    }
+
+    public function delete(Ticket $ticket): RedirectResponse
+    {
+        $ticket->delete();
+        return redirect()->route('support.tickets.index')
+            ->with('success','تیکت دیلیت شد');
     }
 }

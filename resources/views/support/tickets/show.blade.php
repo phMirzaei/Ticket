@@ -1,323 +1,492 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>مشاهده تیکت</title>
+
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
 
     <style>
         body {
+            background-color: #f4f6f9;
+            overflow-x: hidden;
             margin: 0;
-            font-family: Tahoma, Arial, sans-serif;
-            background: #f5f5f5;
         }
 
-        .container {
-            width: 90%;
-            max-width: 800px;
-            margin: 40px auto;
+        .sidebar {
+            min-height: 100vh;
+            background-color: #2c3136;
+            color: #fff;
+            padding: 25px 15px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        .back {
-            display: inline-block;
-            margin-bottom: 20px;
+        .sidebar .brand {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .sidebar a {
+            color: #b8bfc6;
             text-decoration: none;
-            color: #2563eb;
-        }
-
-        .card {
-            background: white;
-            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
             border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
-        .subject {
-            font-size: 22px;
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #3d444b;
+            color: #fff;
+        }
+
+        .sidebar form button {
+            color: #ff6b6b;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-top: 1px solid #444;
+            padding-top: 20px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar form button:hover {
+            background-color: #3d444b;
+            color: #ff8787;
+        }
+
+        .top-navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-navbar h4 {
+            margin: 0;
             font-weight: bold;
-            margin-bottom: 10px;
+            color: #2c3136;
         }
 
-        .meta {
-            color: #777;
+        .top-navbar .ticket-info {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .main-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .ticket-subject {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3136;
             margin-bottom: 15px;
-            line-height: 2;
         }
 
-        .status {
+        .ticket-meta {
+            color: #6c757d;
+            font-size: 0.88rem;
+            line-height: 1.9;
+            margin-bottom: 15px;
+        }
+
+        .badge-status {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: normal;
             display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
         }
 
-        .open {
-            background: #dbeafe;
-            color: #1d4ed8;
+        .status.open {
+            background-color: #cfe2ff;
+            color: #084298;
         }
 
-        .answered {
-            background: #fef3c7;
-            color: #b45309;
+        .status.answered {
+            background-color: #e2f0d9;
+            color: #385723;
         }
 
-        .closed {
-            background: #dcfce7;
-            color: #15803d;
+        .status.closed {
+            background-color: #d1e7dd;
+            color: #0f5132;
         }
 
-        .title {
+        .section-title {
             font-weight: bold;
-            margin: 25px 0 10px;
+            color: #2c3136;
+            margin: 25px 0 15px;
+            font-size: 1rem;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f3f5;
         }
 
-        .original-message,
-        .message {
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 5px;
-            margin-bottom: 10px;
+        .original-message {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 8px;
+            border-right: 4px solid #0d6efd;
+            line-height: 1.9;
+            color: #2c3136;
+            font-size: 0.92rem;
+            white-space: pre-wrap;
+        }
+
+        .message-item {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-right: 4px solid #adb5bd;
+        }
+
+        .message-item.support-message {
+            background: #e7f1ff;
+            border-right-color: #0d6efd;
         }
 
         .message-user {
             font-weight: bold;
+            color: #2c3136;
             margin-bottom: 8px;
+            font-size: 0.92rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .message-text {
-            line-height: 2;
+            line-height: 1.9;
+            color: #495057;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
         }
 
         .message-date {
             display: block;
-            margin-top: 8px;
-            color: #777;
-            font-size: 12px;
+            margin-top: 10px;
+            color: #adb5bd;
+            font-size: 0.75rem;
         }
 
         .reply-form {
-            margin-top: 25px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 120px;
-            padding: 10px;
-            box-sizing: border-box;
-            margin-top: 10px;
-            font-family: inherit;
-            resize: vertical;
-        }
-
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background: #2563eb;
-            color: white;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        .close-button {
-            background: #dc2626;
-            margin-right: 10px;
-        }
-
-        .close-button:hover {
-            background: #b91c1c;
-        }
-
-        .success {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #dcfce7;
-            color: #15803d;
-            border-radius: 5px;
-        }
-
-        .error {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #fee2e2;
-            color: #b91c1c;
-            border-radius: 5px;
-        }
-
-        .closed-message {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
             margin-top: 20px;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            min-height: 130px;
             padding: 12px;
-            background: #f5f5f5;
-            color: #777;
-            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .reply-form textarea:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        }
+
+        .btn-submit {
+            padding: 9px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #0d6efd;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #0b5ed7;
+        }
+
+        .btn-close-ticket {
+            padding: 9px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #dc3545;
+            color: #fff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+        }
+
+        .btn-close-ticket:hover {
+            background: #bb2d3b;
+        }
+
+        .closed-notice {
+            background: #f1f3f5;
+            color: #6c757d;
+            padding: 15px;
+            border-radius: 8px;
             text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-right: 4px solid #198754;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #842029;
+            padding: 12px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-right: 4px solid #dc3545;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.88rem;
+            margin-bottom: 15px;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #0d6efd;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                right: -100%;
+                width: 250px;
+                z-index: 1000;
+                transition: right 0.3s ease;
+            }
+
+            .sidebar.show {
+                right: 0;
+            }
+
+            .main-card {
+                padding: 18px;
+            }
+
+            .ticket-subject {
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="container-fluid">
+    <div class="row g-0">
 
-    <a href="{{ route('support.dashboard') }}" class="back">
-        ← بازگشت به داشبورد
-    </a>
+        <div class="col-md-3 col-lg-2 sidebar" id="sidebarMenu">
+            <div class="brand">پنل مدیریت</div>
+            <nav>
+                <a href="{{ route('support.dashboard') }}">🏠 داشبورد</a>
+                <a href="{{ route('support.tickets.index') }}" class="active">🎫 تیکت‌ها</a>
+                <a href="{{ route('support.users') }}">👥 کاربران</a>
+                <a href="#">⚙️ تنظیمات</a>
 
-    @if(session('success'))
-        <div class="success">
-            {{ session('success') }}
+                <form action="{{ route('auth.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit">🚪 خروج</button>
+                </form>
+            </nav>
         </div>
-    @endif
 
-    @if($errors->any())
-        <div class="error">
-            {{ $errors->first() }}
-        </div>
-    @endif
+        <main class="col-md-9 col-lg-10 p-4">
 
-    <div class="card">
-
-        <div class="header">
-
-            <div class="subject">
-                موضوع:  {{ $ticket->subject }}
+            <div class="top-navbar">
+                <h4>مشاهده تیکت</h4>
+                <span class="ticket-info">شناسه: #{{ $ticket->id }}</span>
             </div>
 
-            <div class="meta">
-                کاربر: {{ $ticket->user->name }}
+            <a href="{{ route('support.tickets.index') }}" class="back-link">
+                ← بازگشت به لیست تیکت‌ها
+            </a>
 
-                <br>
+            @if(session('success'))
+                <div class="alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                تاریخ ثبت:
-                {{ str_replace(
-                    ['0','1','2','3','4','5','6','7','8','9'],
-                    ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
-                    \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i')
-                ) }}            </div>
-            @php
-                $status = match ($ticket->status) {
-                    'open' => 'در انتظار پاسخ',
-                    'answered' => 'پاسخ داده شده',
-                    'closed' => 'بسته شده',
-                    default => $ticket->status,
-                };
-            @endphp
+            @if($errors->any())
+                <div class="alert-error">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
-            <span class="status {{ $ticket->status }}">
-                   وضعیت :   {{ $status }}
+            <div class="main-card">
+
+                <div class="ticket-subject">
+                    موضوع: {{ $ticket->subject }}
+                </div>
+
+                @php
+                    $status = match ($ticket->status) {
+                        'open' => 'در انتظار پاسخ',
+                        'answered' => 'پاسخ داده شده',
+                        'closed' => 'بسته شده',
+                        default => $ticket->status,
+                    };
+                @endphp
+
+                <div class="ticket-meta">
+                    کاربر: {{ $ticket->user->name }} <br>
+                    تاریخ ثبت:
+                    {{ str_replace(
+                        ['0','1','2','3','4','5','6','7','8','9'],
+                        ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+                        \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i')
+                    ) }}
+                </div>
+
+                <span class="badge-status status {{ $ticket->status }}">
+                    وضعیت: {{ $status }}
                 </span>
 
-        </div>
+                <div class="section-title">متن تیکت</div>
 
+                <div class="original-message">
+                    {{ $ticket->message }}
+                </div>
 
-        <div class="title">
-            متن تیکت
-        </div>
+                <div class="section-title">گفتگو</div>
 
-        <div class="original-message">
-            {{ $ticket->message }}
-        </div>
+                @forelse($ticket->messages as $message)
 
+                    <div class="message-item {{ $message->user->role == 'support' ? 'support-message' : '' }}">
 
-        <div class="title">
-            گفتگو
-        </div>
+                        <div class="message-user">
+                            @if($message->user->role == 'support')
+                                🎧 پشتیبان
+                            @else
+                                👤 {{ $message->user->name }}
+                            @endif
+                        </div>
 
-        <div class="messages">
+                        <div class="message-text">
+                            {{ $message->message }}
+                        </div>
 
-            @forelse($ticket->messages as $message)
+                        <small class="message-date">
+                            {{ str_replace(
+                                ['0','1','2','3','4','5','6','7','8','9'],
+                                ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+                                \Morilog\Jalali\Jalalian::fromDateTime(
+                                    $message->created_at->setTimezone('Asia/Tehran')
+                                )->format('Y/m/d H:i')
+                            ) }}
+                        </small>
 
-                <div class="message">
-                    <div class="message-user">
-                        @if($message->user->role =='support')
-                            پشتیبان
-                        @else
-                            {{ $message->user->name }}
-                        @endif
                     </div>
 
-                    <div class="message-text">
-                        {{ $message->message }}
+                @empty
+
+                    <div class="message-item">
+                        <div class="message-text text-muted">
+                            هنوز پیامی ارسال نشده است.
+                        </div>
                     </div>
 
-                    <small class="message-date">
-                        {{ str_replace(
-    ['0','1','2','3','4','5','6','7','8','9'],
-    ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
-    \Morilog\Jalali\Jalalian::fromDateTime(
-        $message->created_at->setTimezone('Asia/Tehran')
-    )->format('Y/m/d H:i')
-    ) }}
-                    </small>
-                </div>
+                @endforelse
 
-            @empty
+                @if($ticket->status !== 'closed')
 
-                <div class="message">
-                    هنوز پیامی ارسال نشده است.
-                </div>
+                    <div class="reply-form">
 
-            @endforelse
+                        <div class="section-title mt-0">ارسال پاسخ</div>
 
-        </div>
+                        <form action="{{ route('support.tickets.messages.store', $ticket) }}" method="POST">
+                            @csrf
 
+                            <textarea
+                                name="message"
+                                placeholder="پاسخ خود را بنویسید..."
+                                required
+                            ></textarea>
 
-        @if($ticket->status !== 'closed')
+                            <div class="d-flex gap-2 mt-3 flex-wrap">
+                                <button type="submit" class="btn-submit">
+                                    ارسال پاسخ
+                                </button>
+                            </div>
+                        </form>
 
-            <div class="reply-form">
+                        <form action="{{ route('support.tickets.close', $ticket) }}" method="POST" class="mt-2">
+                            @csrf
+                            <button type="submit" class="btn-close-ticket">
+                                بستن تیکت
+                            </button>
+                        </form>
 
-                <div class="title">
-                    ارسال پاسخ
-                </div>
+                    </div>
 
-                <form
-                    action="{{ route('support.tickets.messages.store', $ticket) }}"
-                    method="POST"
-                >
-                    @csrf
+                @else
 
-                    <textarea
-                        name="message"
-                        placeholder="پاسخ خود را بنویسید..."
-                        required
-                    ></textarea>
+                    <div class="closed-notice">
+                        این تیکت بسته شده است و امکان ارسال پاسخ وجود ندارد.
+                    </div>
 
-                    <button type="submit">
-                        ارسال پاسخ
-                    </button>
-                </form>
-
-
-                <form
-                    action="{{ route('support.tickets.close', $ticket) }}"
-                    method="POST"
-                >
-                    @csrf
-
-                    <button type="submit" class="close-button">
-                        بستن تیکت
-                    </button>
-                </form>
+                @endif
 
             </div>
 
-        @else
-
-            <div class="closed-message">
-                این تیکت بسته شده است و امکان ارسال پاسخ وجود ندارد.
-            </div>
-
-        @endif
-
+        </main>
     </div>
-
 </div>
 
-</body>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 
+</body>
 </html>
