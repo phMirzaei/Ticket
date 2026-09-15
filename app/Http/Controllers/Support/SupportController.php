@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Support;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\View\View;
 
 class SupportController extends Controller
@@ -22,6 +23,13 @@ class SupportController extends Controller
         $tickets = Ticket::all();
 
         return view('support.tickets.index', compact('tickets'));
+    }
+
+    public function users(): View
+    {
+        $users = User::latest()->get();
+
+        return view('support.users', compact('users'));
     }
 
     public function show(Ticket $ticket): View

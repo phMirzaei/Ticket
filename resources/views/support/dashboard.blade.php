@@ -261,7 +261,7 @@
             <nav>
                 <a href="{{ route('support.dashboard') }}" class="active">🏠 داشبورد</a>
                 <a href="{{ route('support.tickets.index') }}">🎫 تیکت‌ها</a>
-                <a href="#">👥 کاربران</a>
+                <a href="{{ route('support.users') }}">👥 کاربران</a>
                 <a href="#">⚙️ تنظیمات</a>
 
                 <form action="{{ route('auth.logout') }}" method="POST">

@@ -49,6 +49,8 @@ Route::middleware(['auth', 'support'])->group(function () {
         ->name('support.dashboard');
     Route::get('/support/tickets', [SupportController::class, 'index'])
         ->name('support.tickets.index');
+    Route::get('/support/users', [SupportController::class, 'users'])
+        ->name('support.users');
     Route::get('/support/tickets/{ticket}', [SupportController::class, 'show'])
         ->name('support.tickets.show');
     Route::post('/support/tickets/{ticket}/messages', [SupportTicketController::class, 'storeMessage'])

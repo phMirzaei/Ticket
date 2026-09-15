@@ -185,7 +185,7 @@
         <div class="header">
 
             <div class="subject">
-              موضوع:  {{ $ticket->subject }}
+                موضوع:  {{ $ticket->subject }}
             </div>
 
             <div class="meta">
@@ -246,13 +246,13 @@
                     </div>
 
                     <small class="message-date">
-                    {{ str_replace(
-['0','1','2','3','4','5','6','7','8','9'],
-['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
-\Morilog\Jalali\Jalalian::fromDateTime(
-    $message->created_at->setTimezone('Asia/Tehran')
-)->format('Y/m/d H:i')
-) }}
+                        {{ str_replace(
+    ['0','1','2','3','4','5','6','7','8','9'],
+    ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+    \Morilog\Jalali\Jalalian::fromDateTime(
+        $message->created_at->setTimezone('Asia/Tehran')
+    )->format('Y/m/d H:i')
+    ) }}
                     </small>
                 </div>
 
