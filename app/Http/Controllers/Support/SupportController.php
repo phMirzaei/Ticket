@@ -10,11 +10,10 @@ class SupportController extends Controller
 {
     public function dashboard(): View
     {
-        $tickets = Ticket::with('user')
-            ->latest()
-            ->get();
+        $allTickets = Ticket::all();
+        $latestTickets = Ticket::latest()->take(5)->get();
 
-        return view('support.dashboard', compact('tickets'));
+        return view('support.dashboard', compact('allTickets', 'latestTickets'));
 
     }
 
