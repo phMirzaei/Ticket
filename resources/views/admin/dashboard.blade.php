@@ -100,32 +100,30 @@
         <div class="user">
 
             <div>
-                {{ $user->name }}
+              نام:  {{ $user->name }}
             </div>
 
             <div>
-                {{ $user->number }}
+            شماره تماس:  {{ $user->phone }}
             </div>
-
-            <div>
-                نقش: {{ $user->role }}
-            </div>
+<div>
+    @php
+        $role = match ($user->role) {
+            'support' => 'پشتیبان',
+            'admin' => 'مدیر',
+            'customer' => 'مشتری',
+            default => $user->role,
+        };
+    @endphp
+    <span {{ $user->role }}>
+               نقش:   {{ $role }}
+            </span>
+</div>
 
             @if($user->role === 'customer')
                 <a href="{{ route('admin.add', $user) }}">
                     اضافه کردن به پشتیبان‌ها
                 </a>
-            @elseif($user->role === 'support')
-
-                <div>
-                    پشتیبان
-                </div>
-
-            @elseif($user->role === 'admin')
-
-                <div>
-                    ادمین
-                </div>
 
             @endif
 

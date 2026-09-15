@@ -55,7 +55,7 @@
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             margin-bottom: 30px;
         }
@@ -207,17 +207,25 @@
 
         <div class="stat">
             <div class="stat-title">
-                تیکت‌های باز
+                تیکت‌های در انتظار پرداخت
             </div>
 
             <div class="stat-number">
                 {{ $tickets->where('status', 'open')->count() }}
             </div>
         </div>
-
         <div class="stat">
             <div class="stat-title">
-                تیکت‌های بسته
+                تیکت‌های پاسخ داده شده
+            </div>
+
+            <div class="stat-number">
+                {{ $tickets->where('status', 'answered')->count() }}
+            </div>
+        </div>
+        <div class="stat">
+            <div class="stat-title">
+                تیکت‌های بسته شده
             </div>
 
             <div class="stat-number">
@@ -250,7 +258,11 @@
 
                         تاریخ:
 
-         {{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}
+                        {{ str_replace(
+                    ['0','1','2','3','4','5','6','7','8','9'],
+                    ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+                    \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i')
+                ) }}
                     </div>
                 </div>
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Web;
+namespace App\Http\Controllers\Auth;
 
 use App\DTOs\GetUserTickets;
 use App\DTOs\RequestPhoneNumberVerification;
@@ -15,7 +15,7 @@ use App\Services\VerifyPhoneNumberService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
-class AuthWebController extends Controller
+class AuthController extends Controller
 {
     public function login(): View
     {

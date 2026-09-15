@@ -124,7 +124,11 @@
 
     <div class="header">
         <h1>تیکت‌های من</h1>
-
+ <form action="{{ route('auth.logout') }}" METHOD="post">
+     <button type="submit">
+         خروج
+     </button>
+ </form>
         <a href="{{ route('tickets.create') }}" class="new-ticket">
             ثبت تیکت جدید
         </a>
@@ -161,8 +165,13 @@
             <div class="ticket-info">
 
                 <span class="date">
-{{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}                </span>
-
+{{ str_replace(
+['0','1','2','3','4','5','6','7','8','9'],
+['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+\Morilog\Jalali\Jalalian::fromDateTime(
+    $ticket->created_at->setTimezone('Asia/Tehran')
+)->format('Y/m/d H:i')
+) }}
                 <a
                     href="{{ route('tickets.show', $ticket) }}"
                     class="show-ticket"

@@ -141,7 +141,6 @@
             background: #222;
         }
     </style>
-    ```
 
 </head>
 
@@ -149,7 +148,6 @@
 
 <div class="container">
 
-    ```
     <div class="header">
 
         <h1>
@@ -194,8 +192,13 @@
                 </p>
                 <div class="meta">
                     تاریخ ثبت:
-                    {{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}
-                </div>
+                    {{ str_replace(
+                    ['0','1','2','3','4','5','6','7','8','9'],
+                    ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+                    \Morilog\Jalali\Jalalian::fromDateTime(
+                        $ticket->created_at->setTimezone('Asia/Tehran')
+                    )->format('Y/m/d H:i')
+                    ) }}                </div>
                 @php
                     $status = match ($ticket->status) {
                         'open' => 'در انتظار پاسخ',
@@ -225,7 +228,6 @@
         @endforelse
 
     </div>
-    ```
 
 </div>
 

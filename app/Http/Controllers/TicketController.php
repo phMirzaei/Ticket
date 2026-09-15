@@ -14,7 +14,7 @@ use App\Services\ReplyToTicketService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
-class TicketWebController extends Controller
+class TicketController extends Controller
 {
     public function index(GetUserTicketsService $service)
     {

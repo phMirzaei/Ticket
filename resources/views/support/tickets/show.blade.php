@@ -194,8 +194,11 @@
                 <br>
 
                 تاریخ ثبت:
-                {{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}
-            </div>
+                {{ str_replace(
+                    ['0','1','2','3','4','5','6','7','8','9'],
+                    ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+                    \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i')
+                ) }}            </div>
             @php
                 $status = match ($ticket->status) {
                     'open' => 'در انتظار پاسخ',
@@ -230,9 +233,12 @@
             @forelse($ticket->messages as $message)
 
                 <div class="message">
-
                     <div class="message-user">
-                        {{ $message->user->name }}
+                        @if($message->user->role =='support')
+                            پشتیبان
+                        @else
+                            {{ $message->user->name }}
+                        @endif
                     </div>
 
                     <div class="message-text">
@@ -240,9 +246,14 @@
                     </div>
 
                     <small class="message-date">
-                        {{ \Morilog\Jalali\Jalalian::fromDateTime($ticket->created_at)->format('Y/m/d H:i') }}
+                    {{ str_replace(
+['0','1','2','3','4','5','6','7','8','9'],
+['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'],
+\Morilog\Jalali\Jalalian::fromDateTime(
+    $message->created_at->setTimezone('Asia/Tehran')
+)->format('Y/m/d H:i')
+) }}
                     </small>
-
                 </div>
 
             @empty

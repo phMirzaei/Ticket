@@ -75,10 +75,21 @@
             {{ $user->phone }}
         </div>
 
-        <div>
-            <strong>نقش فعلی:</strong>
-            {{ $user->role }}
-        </div>
+            <div>
+                @php
+                    $role = match ($user->role) {
+                        'support' => 'پشتیبان',
+                        'admin' => 'مدیر',
+                        'customer' => 'مشتری',
+                        default => $user->role,
+                    };
+                @endphp
+            </div>
+
+            <strong {{$user->role}}>
+                نقش فعلی:
+            </strong>
+        <span>{{ $role }}</span>
 
     </div>
 

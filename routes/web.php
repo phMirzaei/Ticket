@@ -3,44 +3,44 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Support\SupportController;
 use App\Http\Controllers\Support\SupportTicketController;
-use App\Http\Controllers\TicketWebController;
-use App\Http\Controllers\Web\AuthWebController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/login', [AuthWebController::class, 'login'])
+Route::get('/login', [AuthController::class, 'login'])
     ->name('auth.login');
 
-Route::post('/login', [AuthWebController::class, 'requestOtp'])
+Route::post('/login', [AuthController::class, 'requestOtp'])
     ->middleware('throttle:6,1')
     ->name('auth.request-otp');
 
-Route::post('/otp', [AuthWebController::class, 'verifyOtp'])
+Route::post('/otp', [AuthController::class, 'verifyOtp'])
     ->name('auth.verify-otp');
 
-Route::get('/complete-profile', [AuthWebController::class, 'name'])
+Route::get('/complete-profile', [AuthController::class, 'name'])
     ->name('profile.name');
 
-Route::post('/complete-profile', [AuthWebController::class, 'updateName'])
+Route::post('/complete-profile', [AuthController::class, 'updateName'])
     ->name('profile.name.update');
 
-Route::get('/dashboard', [AuthWebController::class, 'dashboard'])
+Route::get('/dashboard', [AuthController::class, 'dashboard'])
     ->name('dashboard');
 
-Route::post('/logout', [AuthWebController::class, 'logout'])
+Route::post('/logout', [AuthController::class, 'logout'])
     ->name('auth.logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/tickets/create', [TicketWebController::class, 'create'])
+    Route::get('/tickets/create', [TicketController::class, 'create'])
         ->name('tickets.create');
 
-    Route::post('/tickets', [TicketWebController::class, 'store'])
+    Route::post('/tickets', [TicketController::class, 'store'])
         ->name('tickets.store');
 
-    Route::get('/tickets', [TicketWebController::class, 'index'])
+    Route::get('/tickets', [TicketController::class, 'index'])
         ->name('tickets.index');
-    Route::get('/tickets/{ticket}', [TicketWebController::class, 'show'])
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])
         ->name('tickets.show');
-    Route::post('/tickets/{ticket}/reply', [TicketWebController::class, 'reply'])
+    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'reply'])
         ->name('tickets.reply');
 });
 
