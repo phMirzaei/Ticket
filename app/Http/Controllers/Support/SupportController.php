@@ -40,11 +40,4 @@ class SupportController extends Controller
 
         return view('support.tickets.show', compact('ticket'));
     }
-
-    public function delete(Ticket $ticket): RedirectResponse
-    {
-        $ticket->delete();
-        return redirect()->route('support.tickets.index')
-            ->with('success','تیکت دیلیت شد');
-    }
 }

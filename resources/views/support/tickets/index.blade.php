@@ -344,15 +344,6 @@
                             مشاهده تیکت
                         </a>
 
-                        @if($ticket->status === 'closed')
-                            <form action="{{ route('support.tickets.delete', $ticket) }}" method="POST" onsubmit="return confirm('آیا از حذف این تیکت مطمئن هستید؟');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn-delete">
-                                    🗑 حذف
-                                </button>
-                            </form>
-                        @endif
                     </div>
 
                 </div>
