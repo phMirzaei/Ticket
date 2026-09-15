@@ -17,6 +17,13 @@ class SupportController extends Controller
 
     }
 
+    public function index(): View
+    {
+        $tickets = Ticket::all();
+
+        return view('support.tickets.index', compact('tickets'));
+    }
+
     public function show(Ticket $ticket): View
     {
         $ticket->load('messages.user');

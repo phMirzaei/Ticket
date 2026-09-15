@@ -259,8 +259,8 @@
         <div class="col-md-3 col-lg-2 sidebar" id="sidebarMenu">
             <div class="brand">پنل مدیریت</div>
             <nav>
-                <a href="#" class="active">🏠 داشبورد</a>
-                <a href="#">🎫 تیکت‌ها</a>
+                <a href="{{ route('support.dashboard') }}" class="active">🏠 داشبورد</a>
+                <a href="{{ route('support.tickets.index') }}">🎫 تیکت‌ها</a>
                 <a href="#">👥 کاربران</a>
                 <a href="#">⚙️ تنظیمات</a>
 
