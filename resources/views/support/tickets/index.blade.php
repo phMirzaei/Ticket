@@ -280,7 +280,6 @@
                 <a href="{{ route('support.dashboard') }}">🏠 داشبورد</a>
                 <a href="{{ route('support.tickets.index') }}" class="active">🎫 تیکت‌ها</a>
                 <a href="{{ route('support.users') }}">👥 کاربران</a>
-                <a href="#">⚙️ تنظیمات</a>
 
                 <form action="{{ route('auth.logout') }}" method="POST">
                     @csrf
