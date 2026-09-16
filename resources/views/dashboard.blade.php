@@ -142,7 +142,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
             padding: 22px;
             margin-bottom: 25px;
-            height: 100%;
+            height: 98%;
         }
 
         .chart-card h6 {
