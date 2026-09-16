@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Tickets;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTicketRequest extends FormRequest
@@ -11,6 +10,7 @@ class StoreTicketRequest extends FormRequest
     {
         return true;
     }
+
     public function rules(): array
     {
         return [
