@@ -1,150 +1,421 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>داشبورد ادمین</title>
+
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
 
     <style>
         body {
+            background-color: #f4f6f9;
+            overflow-x: hidden;
             margin: 0;
-            padding: 40px;
-            font-family: Tahoma, Arial, sans-serif;
-            background: #f5f5f5;
+            min-height: 100vh;
         }
 
-        div {
-            margin-bottom: 20px;
+        .sidebar {
+            min-height: 100vh;
+            background-color: #2c3136;
+            color: #fff;
+            padding: 25px 15px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        h1 {
-            margin-bottom: 20px;
+        .sidebar .brand {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #fff;
         }
 
-        a {
-            display: inline-block;
-            padding: 10px 15px;
-            margin-left: 10px;
-            background: #2563eb;
-            color: white;
+        .sidebar a {
+            color: #b8bfc6;
             text-decoration: none;
-            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
-        a:hover {
-            background: #1d4ed8;
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #3d444b;
+            color: #fff;
         }
 
-        button {
-            padding: 10px 15px;
-            background: #dc2626;
-            color: white;
+        .sidebar form button {
+            color: #ff6b6b;
+            background: none;
             border: none;
-            border-radius: 5px;
+            width: 100%;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-top: 1px solid #444;
+            padding-top: 20px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        button:hover {
-            background: #b91c1c;
+        .sidebar form button:hover {
+            background-color: #3d444b;
+            color: #ff8787;
         }
 
-        .user {
-            background: white;
-            padding: 15px;
+        .top-navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-navbar h4 {
+            margin: 0;
+            font-weight: bold;
+            color: #2c3136;
+        }
+
+        .top-navbar .user-count {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h5 {
+            margin: 0;
+            font-weight: bold;
+            color: #2c3136;
+            font-size: 1.15rem;
+        }
+
+        .btn-supports {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            background: #2c3136;
+            color: #fff;
+            text-decoration: none;
             border-radius: 8px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-supports:hover {
+            background: #1a1e22;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            padding: 22px;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 2rem;
             margin-bottom: 10px;
         }
 
-        .user a {
-            background: #16a34a;
-            margin-top: 10px;
+        .stat-card .stat-title {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
         }
 
-        .user a:hover {
-            background: #15803d;
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3136;
+            margin: 0;
+        }
+
+        .user-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #0d6efd;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: #2c3136;
+            font-size: 0.95rem;
+        }
+
+        .user-phone {
+            color: #6c757d;
+            font-size: 0.82rem;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        .badge-role {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: normal;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .badge-role.customer {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-role.support {
+            background-color: #e2f0d9;
+            color: #385723;
+        }
+
+        .badge-role.admin {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .user-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            border-top: 1px solid #f1f3f5;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-add-support {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #198754;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-support:hover {
+            background: #146c43;
+            color: #fff;
+        }
+
+        .empty-state {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            color: #6c757d;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                right: -100%;
+                width: 250px;
+                z-index: 1000;
+                transition: right 0.3s ease;
+            }
+
+            .sidebar.show {
+                right: 0;
+            }
+
+            .user-card {
+                padding: 15px;
+            }
+
+            .user-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-actions {
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
-
 <body>
 
-<div>
-    <h1>داشبورد ادمین</h1>
+<div class="container-fluid">
+    <div class="row g-0">
 
-    <form action="{{ route('auth.logout') }}" method="post">
-        @csrf
+        <div class="col-md-3 col-lg-2 sidebar" id="sidebarMenu">
+            <div class="brand">پنل مدیریت</div>
+            <nav>
+                <a href="{{ route('admin.dashboard') }}" class="active">🏠 داشبورد</a>
+                <a href="{{ route('admin.supports') }}">🎧 پشتیبان‌ها</a>
+                <form action="{{ route('auth.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit">🚪 خروج</button>
+                </form>
+            </nav>
+        </div>
 
-        <button type="submit">
-            خروج
-        </button>
-    </form>
-</div>
+        <main class="col-md-9 col-lg-10 p-4">
 
-<div>
-    تعداد کاربران
-</div>
-
-<div>
-    {{ $users->count() }}
-</div>
-
-<div>
-
-    <h2>
-        کاربران
-    </h2>
-
-    @forelse($users as $user)
-
-        <div class="user">
-
-            <div>
-              نام:  {{ $user->name }}
+            <div class="top-navbar">
+                <h4>داشبورد ادمین</h4>
+                <span class="user-count">خوش آمدید، مدیر 👋</span>
             </div>
 
-            <div>
-            شماره تماس:  {{ $user->phone }}
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-title">تعداد کل کاربران</div>
+                <div class="stat-number">{{ $users->count() }}</div>
             </div>
-<div>
-    @php
-        $role = match ($user->role) {
-            'support' => 'پشتیبان',
-            'admin' => 'مدیر',
-            'customer' => 'مشتری',
-            default => $user->role,
-        };
-    @endphp
-    <span {{ $user->role }}>
-               نقش:   {{ $role }}
-            </span>
-</div>
 
-            @if($user->role === 'customer')
-                <a href="{{ route('admin.add', $user) }}">
-                    اضافه کردن به پشتیبان‌ها
+            <div class="page-header">
+                <h5>👥 لیست کاربران</h5>
+
+                <a href="{{ route('admin.supports') }}" class="btn-supports">
+                    🎧 مشاهده پشتیبان‌ها
                 </a>
+            </div>
 
-            @endif
+            @forelse($users as $user)
 
-        </div>
+                @php
+                    $role = match ($user->role) {
+                        'support' => 'پشتیبان',
+                        'admin' => 'مدیر',
+                        'customer' => 'مشتری',
+                        default => $user->role,
+                    };
+                @endphp
 
-    @empty
+                <div class="user-card">
 
-        <div>
-            هنوز هیچ کاربری وجود ندارد.
-        </div>
+                    <div class="user-header">
 
-    @endforelse
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                {{ mb_substr($user->name, 0, 1) }}
+                            </div>
 
+                            <div>
+                                <div class="user-name">{{ $user->name }}</div>
+                                <div class="user-phone">{{ $user->phone ?? 'ثبت نشده' }}</div>
+                            </div>
+                        </div>
+
+                        <span class="badge-role {{ $user->role }}">
+                            {{ $role }}
+                        </span>
+
+                    </div>
+
+                    @if($user->role === 'customer')
+                        <div class="user-actions">
+                            <a href="{{ route('admin.add', $user) }}" class="btn-add-support">
+                                ➕ اضافه کردن به پشتیبان‌ها
+                            </a>
+                        </div>
+                    @endif
+
+                </div>
+
+            @empty
+
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>هنوز هیچ کاربری وجود ندارد.</p>
+                </div>
+
+            @endforelse
+
+        </main>
+    </div>
 </div>
 
-<div>
-    <a href="{{ route('admin.supports') }}">
-        مشاهده پشتیبان‌ها
-    </a>
-</div>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 
 </body>
-
 </html>

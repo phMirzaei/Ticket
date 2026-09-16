@@ -55,9 +55,6 @@ Route::middleware(['auth', 'support'])->group(function () {
         ->name('support.tickets.show');
     Route::post('/support/tickets/{ticket}/messages', [SupportTicketController::class, 'storeMessage'])
         ->name('support.tickets.messages.store');
-    Route::post('/support/tickets/{ticket}/close', [SupportTicketController::class, 'close'])
-        ->name('support.tickets.close')
-        ->middleware('support');
 });
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/supports', [AdminController::class, 'showSupports'])
@@ -68,5 +65,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('admin.add');
     Route::post('/add/support/{user}', [AdminController::class, 'addSupport'])
         ->name('admin.add.store');
+    Route::put('/remove/support/{support}', [AdminController::class, 'deleteSupport'])
+        ->name('admin.delete.support');
 
 });

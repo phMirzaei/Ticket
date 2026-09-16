@@ -462,13 +462,6 @@
                             </div>
                         </form>
 
-                        <form action="{{ route('support.tickets.close', $ticket) }}" method="POST" class="mt-2">
-                            @csrf
-                            <button type="submit" class="btn-close-ticket">
-                                بستن تیکت
-                            </button>
-                        </form>
-
                     </div>
 
                 @else

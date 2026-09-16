@@ -13,7 +13,8 @@ class AdminController extends Controller
 {
     public function dashboard(): View
     {
-        $users = User::all();
+        $users = User::orderByRaw('FIELD(role,"customer","support","admin")')
+            ->get();
 
         return view('admin.dashboard', compact('users'));
     }
@@ -37,5 +38,12 @@ class AdminController extends Controller
         return view('admin.add', [
             'user' => $user,
         ]);
+    }
+
+    public function deleteSupport(User $support): RedirectResponse
+    {
+        $support->update(['role' => 'customer']);
+
+        return redirect()->route('admin.dashboard');
     }
 }
