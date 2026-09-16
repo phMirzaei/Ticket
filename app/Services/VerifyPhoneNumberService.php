@@ -19,10 +19,10 @@ class VerifyPhoneNumberService
         $phone = $verifyPhoneNumber->phone;
         $code = $verifyPhoneNumber->code;
 
-        $key = 'otp-verify:' . $phone;
+        $key = 'otp-verify:'.$phone;
 
         if (RateLimiter::tooManyAttempts($key, 3)) {
-            throw new OtpAttemptsExceededException();
+            throw new OtpAttemptsExceededException;
         }
 
         RateLimiter::hit($key, 600);
@@ -52,4 +52,5 @@ class VerifyPhoneNumberService
 
             return $user;
         });
-    }}
+    }
+}

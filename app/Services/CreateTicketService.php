@@ -15,5 +15,5 @@ class CreateTicketService
             'message' => $createTicket->message,
             'status' => 'open',
         ]);
-}
+    }
 }
